@@ -2,40 +2,40 @@ import PropTypes from 'prop-types'
 
 import PollItems from './PollItems'
 
-const PollForm = () => {
+const PollForm = (Props) => {
   const handleChange = (field, e) => {
-    this.props.handleChange(field, e.target.value)
+    Props.handleChange(field, e.target.value)
   }
 
   const handleOptionsChange = (options) => {
-    this.props.handleChange('items', options)
+    Props.handleChange('items', options)
   }
 
   const handleClose = (e) => {
     e.preventDefault()
-    this.props.handleClose()
+    Props.handleClose()
   }
 
   return (
     <div>
-      <form onSubmit={this.props.handleSubmit.bind(this)}>
+      <form onSubmit={Props.handleSubmit.bind(this)}>
         <label htmlFor="title">Poll title</label>
         <input
           className="m-1"
           type="text"
           id="title"
           name="title"
-          value={this.props.poll.title}
+          value={Props.poll.title}
           onChange={handleChange.bind(this, 'title')}
           required={true}
         />
         <h4>Options to vote:</h4>
         <PollItems
-          items={this.props.poll.items}
+          items={Props.poll.items}
           handleChange={handleOptionsChange.bind(this)}
         />
         <button className="btn btn-primary m-1" type="submit">
-          {this.props.buttonLabel}
+          {Props.buttonLabel}
         </button>
         <button
           className="btn btn-primary m-1"
