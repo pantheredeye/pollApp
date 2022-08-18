@@ -216,7 +216,7 @@ class PollsListContainer extends React.Component {
     const { error, isLoaded } = this.state
     let errorComponent
     if (error) {
-      return <ErrorComponent message={'Ошибка: ' + error} />
+      return <ErrorComponent message={'Error: ' + error} />
     } else if (!isLoaded) {
       return <div>Загрузка...</div>
     }
