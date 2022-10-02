@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import PropTypes from 'prop-types'
 
-import PollForm from './PollForm'
+import PollForm from '../PollForm/PollForm'
 
 const AddingPoll = (Props) => {
   const [state, setState] = useState({

@@ -1,3 +1,10 @@
+import { useState } from 'react'
+
+import AddingPoll from '../AddingPoll/AddingPoll'
+import EditPoll from '../EditPoll/EditPoll'
+import PollsList from '../PollsList/PollsList'
+import VotePoll from '../VotePoll/VotePoll'
+
 export const QUERY = gql`
   query PollsQuery {
     polls {
@@ -5,6 +12,59 @@ export const QUERY = gql`
     }
   }
 `
+
+const manualRoute = (routeState) => {
+  switch (routeState) {
+    case RouteStates.PollList:
+      return (
+        <PollsList
+          user={this.props.user}
+          polls={this.state.polls}
+          addPoll={this.startAddPoll.bind(this)}
+          editPoll={this.startEditPoll.bind(this)}
+          votePoll={this.startVotePoll.bind(this)}
+          deletePoll={this.deletePoll.bind(this)}
+        />
+      )
+      break
+    case RouteStates.AddPoll:
+      return (
+        <AddingPoll
+          user={this.state.user}
+          onSubmit={this.addPoll.bind(this)}
+          onCancel={this.handleEditorCancel.bind(this)}
+        />
+      )
+      break
+    case RouteStates.EditPoll:
+      return (
+        <EditPoll
+          user={this.state.user}
+          poll={this.state.poll}
+          onSubmit={this.editPoll.bind(this)}
+          onCancel={this.handleEditorCancel.bind(this)}
+        />
+      )
+      break
+    case RouteStates.Vote:
+      return (
+        <VotePoll
+          user={this.state.user}
+          poll={this.state.poll}
+          voteId={this.state.voteId}
+          votesCount={this.state.votesCount}
+          onChangeOption={this.changeOption.bind(this)}
+          onVote={this.votePoll.bind(this)}
+          onCancel={this.handleEditorCancel.bind(this)}
+        />
+      )
+      break
+    default:
+      break
+  }
+  // By default use PollList
+  return <PollsListContainer user={this.state.user} />
+}
 
 export const Loading = () => <div>Loading...</div>
 
@@ -15,37 +75,34 @@ export const Failure = ({ error }) => (
 )
 
 export const Success = ({ polls }) => {
-  constructor(props) {
-    super(props)
-    this.state = {
-      error: undefined,
-      isLoaded: false,
-      routeState: RouteStates.PollList,
-    }
+  const [state, UpdateState] = useState({
+    error: undefined,
+    isLoaded: false,
+    routeState: RouteStates.PollList,
+  })
 
-    const changeOption = (voteId) => {
-      let votesCount = this.state.votesCount
-      let unsetIndex = votesCount.findIndex((vote) => vote.selectedByUser)
-      let setIndex = votesCount.findIndex((vote) => vote.pollItem.id === voteId)
-      let query = {}
-      if (unsetIndex >= 0) {
-        query[unsetIndex] = {
-          selectedByUser: { $set: false },
-          total: { $apply: (v) => v - 1 },
-        }
+  const changeOption = (voteId) => {
+    let votesCount = this.state.votesCount
+    let unsetIndex = votesCount.findIndex((vote) => vote.selectedByUser)
+    let setIndex = votesCount.findIndex((vote) => vote.pollItem.id === voteId)
+    let query = {}
+    if (unsetIndex >= 0) {
+      query[unsetIndex] = {
+        selectedByUser: { $set: false },
+        total: { $apply: (v) => v - 1 },
       }
-      if (setIndex >= 0) {
-        query[setIndex] = {
-          selectedByUser: { $set: true },
-          total: { $apply: (v) => v + 1 },
-        }
-      }
-      let newVotesCount = update(votesCount, query)
-      this.setState({ voteId: voteId, votesCount: newVotesCount })
     }
+    if (setIndex >= 0) {
+      query[setIndex] = {
+        selectedByUser: { $set: true },
+        total: { $apply: (v) => v + 1 },
+      }
+    }
+    let newVotesCount = update(votesCount, query)
+    this.setState({ voteId: voteId, votesCount: newVotesCount })
   }
 
-  componentDidMount() {
+  const componentDidMount = () => {
     fetch(`${API_URL}/polls`, {
       method: 'GET',
       headers: API_HEADERS,
@@ -85,18 +142,18 @@ export const Success = ({ polls }) => {
     this.setState({ routeState: RouteStates.PollList })
   }
 
-  const startAddPoll=()=> {
+  const startAddPoll = () => {
     this.setState({ routeState: RouteStates.AddPoll })
   }
 
- const  startEditPoll = (pollId) => {
+  const startEditPoll = (pollId) => {
     let poll = this.getPoll(pollId)
     if (poll !== undefined) {
       this.setState({ routeState: RouteStates.EditPoll, poll: poll })
     }
   }
 
-  const startVotePoll=(pollId) =>{
+  const startVotePoll = (pollId) => {
     let poll = this.getPoll(pollId)
     if (poll !== undefined) {
       fetch(`${API_URL}/votes?pollId=${pollId}`, { method: 'GET' })
@@ -126,7 +183,7 @@ export const Success = ({ polls }) => {
     }
   }
 
-  const addPoll = (poll)=>  {
+  const addPoll = (poll) => {
     if (poll.id === null) {
       poll = { ...poll, id: Date.now().toString() }
     }
@@ -149,7 +206,13 @@ export const Success = ({ polls }) => {
     }
     this.sendPoll(poll, 'PUT', newState)
   }
-
+  const getPoll = (pollId) => {
+    let pollIndex = this.state.polls.findIndex((poll) => poll.id === pollId)
+    if (pollIndex >= 0) {
+      return this.state.polls[pollIndex]
+    }
+    return undefined
+  }
   const sendPoll = (poll, method, newState) => {
     let prevState = this.state
     fetch(`${API_URL}/polls`, {
@@ -209,74 +272,7 @@ export const Success = ({ polls }) => {
         this.setState({ ...prevState, error: error.message })
       })
   }
-  const manualRoute = (routeState) => {
-    switch (routeState) {
-      case RouteStates.PollList:
-        return (
-          <PollsList
-            user={this.props.user}
-            polls={this.state.polls}
-            addPoll={this.startAddPoll.bind(this)}
-            editPoll={this.startEditPoll.bind(this)}
-            votePoll={this.startVotePoll.bind(this)}
-            deletePoll={this.deletePoll.bind(this)}
-          />
-        )
-        break
-      case RouteStates.AddPoll:
-        return (
-          <AddingPollComponent
-            user={this.state.user}
-            onSubmit={this.addPoll.bind(this)}
-            onCancel={this.handleEditorCancel.bind(this)}
-          />
-        )
-        break
-      case RouteStates.EditPoll:
-        return (
-          <EditPoll
-            user={this.state.user}
-            poll={this.state.poll}
-            onSubmit={this.editPoll.bind(this)}
-            onCancel={this.handleEditorCancel.bind(this)}
-          />
-        )
-        break
-      case RouteStates.Vote:
-        return (
-          <VotePoll
-            user={this.state.user}
-            poll={this.state.poll}
-            voteId={this.state.voteId}
-            votesCount={this.state.votesCount}
-            onChangeOption={this.changeOption.bind(this)}
-            onVote={this.votePoll.bind(this)}
-            onCancel={this.handleEditorCancel.bind(this)}
-          />
-        )
-        break
-      default:
-        break
-    }
-    // By default use PollList
-    return <PollsListContainer user={this.state.user} />
-  }
 
-  const getPoll = (pollId) => {
-    let pollIndex = this.state.polls.findIndex((poll) => poll.id === pollId)
-    if (pollIndex >= 0) {
-      return this.state.polls[pollIndex]
-    }
-    return undefined
-  }
-
-  const { error, isLoaded } = this.state
-  let errorComponent
-  if (error) {
-    return <ErrorComponent message={'Error: ' + error} />
-  } else if (!isLoaded) {
-    return <div>Error...</div>
-  }
   let childComponent = manualRoute(this.state.routeState)
   return (
     <div>
@@ -284,8 +280,6 @@ export const Success = ({ polls }) => {
       {childComponent}
     </div>
   )
-
-
 }
 
 PollForm.propTypes = {

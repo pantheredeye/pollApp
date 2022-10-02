@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import PollItems from './PollItems'
+import PollItems from '../PollItems/PollItems'
 
 const PollForm = (Props) => {
   const handleChange = (field, e) => {
