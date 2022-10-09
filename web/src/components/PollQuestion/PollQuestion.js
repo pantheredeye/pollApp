@@ -1,11 +1,5 @@
-const PollQuestion = () => {
-  return (
-    <div>
-      <h2>{'PollQuestion'}</h2>
-
-      <p>{'Find me in ./web/src/components/PollQuestion/PollQuestion.js'}</p>
-    </div>
-  )
+const PollQuestion = ({ question }) => {
+  return <div className="px-4 py-2 sm:px-6">{question}</div>
 }
 
 export default PollQuestion

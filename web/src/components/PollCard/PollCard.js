@@ -1,11 +1,21 @@
-import { PlusIcon as PlusIconMini } from '@heroicons/react/20/solid'
+// TODO: Add set Selected hook to set selected style
+// TODO: Add form submittal on selected
+// TODO: Validate Next Click on empty selection
+
+import { useState, useEffect } from 'react'
 
 import PollAnswer from '../PollAnswer/PollAnswer'
+import PollQuestion from '../PollQuestion/PollQuestion'
 
 const PollCard = ({ pollItem }) => {
+  const [selectedAnswer, setSelectedAnswer] = useState('')
+  useEffect(() => {
+    console.log(`You selected ${selectedAnswer}.`)
+  })
+
   return (
     <div className="overflow rounded-lg bg-white shadow">
-      <div className="px-4 py-2 sm:px-6">{pollItem.question}</div>
+      <PollQuestion question={pollItem.question} />
       <div className="px-4 py-2 sm:p-4">
         <ul className="space-y-2">
           {pollItem.answers.map((answer) => (
@@ -13,7 +23,12 @@ const PollCard = ({ pollItem }) => {
               key={answer.id}
               className="overflow-hidden rounded-sm bg-gray-100 p-1 text-gray-700 shadow hover:bg-blue-100 hover:text-blue-400"
             >
-              <PollAnswer answer={answer} />
+              <PollAnswer
+                onClick={() => {
+                  setSelectedAnswer(answer.id)
+                }}
+                answer={answer}
+              />
             </li>
           ))}
           <li className="overflow-hidden rounded-sm bg-gray-100 p-1 text-gray-700 shadow hover:bg-blue-100 hover:text-blue-400">
