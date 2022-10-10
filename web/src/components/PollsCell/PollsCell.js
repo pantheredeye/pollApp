@@ -2,6 +2,11 @@ export const QUERY = gql`
   query PollsQuery {
     polls {
       id
+      question
+      answers {
+        id
+        answer
+      }
     }
   }
 `

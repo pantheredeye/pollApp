@@ -4,57 +4,85 @@
 
 import { useState, useEffect } from 'react'
 
+import { RadioGroup } from '@headlessui/react'
+
 import PollAnswer from '../PollAnswer/PollAnswer'
 import PollQuestion from '../PollQuestion/PollQuestion'
 
 const PollCard = ({ pollItem }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState('')
+  const [selected, setSelected] = useState('')
   useEffect(() => {
-    console.log(`You selected ${selectedAnswer}.`)
+    console.log(`You selected ${selected}.`)
   })
 
   return (
-    <div className="overflow rounded-lg bg-white shadow">
+    <div className="overflow rounded-md shadow">
       <PollQuestion question={pollItem.question} />
       <div className="px-4 py-2 sm:p-4">
-        <ul className="space-y-2">
+        <RadioGroup value={selected} onChange={setSelected}>
+          <RadioGroup.Label className="sr-only">
+            {pollItem.question}
+          </RadioGroup.Label>
+
           {pollItem.answers.map((answer) => (
-            <li
+            <RadioGroup.Option
               key={answer.id}
-              className="overflow-hidden rounded-sm bg-gray-100 p-1 text-gray-700 shadow hover:bg-blue-100 hover:text-blue-400"
+              value={answer.answer}
+              className={({ active, checked }) =>
+                `${
+                  active
+                    ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                    : ''
+                }
+                  ${
+                    checked ? 'bg-sky-900 bg-opacity-75 text-white' : 'bg-white'
+                  }
+                    relative m-3 flex cursor-pointer rounded-md p-2 shadow-md focus:outline-none`
+              }
             >
-              <PollAnswer
-                onClick={() => {
-                  setSelectedAnswer(answer.id)
-                }}
-                answer={answer}
-              />
-            </li>
+              {({ active, checked }) => (
+                <>
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="text-sm">
+                        <RadioGroup.Label
+                          as="p"
+                          className={`font-medium  ${
+                            checked ? 'text-white' : 'text-gray-900'
+                          }`}
+                        >
+                          {answer.answer}
+                        </RadioGroup.Label>
+                      </div>
+                    </div>
+                    {checked && (
+                      <div className="shrink-0 text-white">
+                        <CheckIcon className="h-6 w-6" />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </RadioGroup.Option>
           ))}
-          <li className="overflow-hidden rounded-sm bg-gray-100 p-1 text-gray-700 shadow hover:bg-blue-100 hover:text-blue-400">
-            <PollAnswer
-              answer={{ id: '+', answer: 'Write a custom answer here...' }}
-            />
-          </li>
-        </ul>
-      </div>
-      <div className="bg-gray-50 px-4 py-2">
-        <div className="flex justify-center">
-          <button
-            type="button"
-            className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Next
-          </button>
-        </div>
+        </RadioGroup>
       </div>
     </div>
+  )
+}
+
+function CheckIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
+      <path
+        d="M7 13l3 3 7-7"
+        stroke="#fff"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 
