@@ -1,5 +1,6 @@
-// TODO: Add set Selected hook to set selected style
 // TODO: Add form submittal on selected
+// TODO: Fetch Questions; Fetch previous answers; Merge
+
 // TODO: Validate Next Click on empty selection
 
 import { useState, useEffect } from 'react'
@@ -18,7 +19,7 @@ const PollCard = ({ pollItem }) => {
   return (
     <div className="overflow rounded-md shadow">
       <PollQuestion question={pollItem.question} />
-      <div className="px-4 py-2 sm:p-4">
+      <div className="p-2">
         <RadioGroup value={selected} onChange={setSelected}>
           <RadioGroup.Label className="sr-only">
             {pollItem.question}
